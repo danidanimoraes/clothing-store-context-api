@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -12,36 +12,49 @@ import { selectCurrentUser } from '../../redux/user/user.selectors';
 import { ReactComponent as Logo } from '../../assets/crown.svg';
 
 import './header.styles.scss';
+import CurrentUserContext from '../../contexts/currentUser/current-user.context';
+import CartContext from '../../contexts/cart/cart.context';
 
-const Header = ({ currentUser, hidden }) => (
-  <div className='header'>
-    <Link className='logo-container' to='/'>
-      <Logo className='logo' />
-    </Link>
-    <div className='options'>
-      <Link className='option' to='/shop'>
-        SHOP
+const Header = () => {
+  // CartIcon needs toggleHidden and CartDropdown needs hidden
+  // In the provider we replace context values by the local values
+  const currentUser = useContext(CurrentUserContext);
+  const [hidden, setHidden] = useState(true);
+  const toggleHidden = () => setHidden(!hidden);
+
+  return (
+    <div className='header'>
+      <Link className='logo-container' to='/'>
+        <Logo className='logo' />
       </Link>
-      <Link className='option' to='/shop'>
-        CONTACT
+      <div className='options'>
+        <Link className='option' to='/shop'>
+          SHOP
       </Link>
-      {currentUser ? (
-        <div className='option' onClick={() => auth.signOut()}>
-          SIGN OUT
-        </div>
-      ) : (
-        <Link className='option' to='/signin'>
-          SIGN IN
-        </Link>
-      )}
-      <CartIcon />
-    </div>
-    {hidden ? null : <CartDropdown />}
-  </div>
-);
+        <Link className='option' to='/shop'>
+          CONTACT
+      </Link>
+        {currentUser ? (
+          <div className='option' onClick={() => auth.signOut()}>
+            SIGN OUT
+          </div>
+        ) : (
+            <Link className='option' to='/signin'>
+              SIGN IN
+            </Link>
+          )}
+
+        <CartContext.Provider value={{ hidden, toggleHidden }}>
+          <CartIcon />
+        </CartContext.Provider>
+      </div>
+      { hidden ? null : <CartDropdown />}
+    </div >
+  )
+};
 
 const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser,
+  // currentUser: selectCurrentUser,
   hidden: selectCartHidden
 });
 
