@@ -10,7 +10,7 @@ import './collection.styles.scss';
 
 const CollectionPage = ({ match }) => {
   // Approach #2: useContext hook
-  const collections = useContext(CollectionsContext);
+  const { collections } = useContext(CollectionsContext);
   const collection = collections[match.params.collectionId];
   const { title, items } = collection;
   return (
